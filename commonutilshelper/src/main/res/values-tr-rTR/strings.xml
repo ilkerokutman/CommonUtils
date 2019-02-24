@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CommonUtilsHelper</string>
+    <string name="str_loading">Yükleniyor</string>
+    <string name="str_invalid_phone_number">Geçersiz Telefon Numarası</string>
+    <string name="str_cant_send_email">Eposta gönderilemiyor</string>
+    <string name="str_invalid_email">Geçersiz Eposta Adresi</string>
+</resources>
