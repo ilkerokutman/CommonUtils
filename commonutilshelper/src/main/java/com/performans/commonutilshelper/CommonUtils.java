@@ -38,6 +38,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -47,6 +48,8 @@ import androidx.core.widget.NestedScrollView;
 public class CommonUtils {
 
     private static final String TAG = CommonUtils.class.getSimpleName();
+
+    public static final String DATE_STRING_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 
     public static String getAppVersionName() {
         return BuildConfig.VERSION_NAME;
@@ -499,4 +502,26 @@ public class CommonUtils {
         }
     }
 
+    public static String getNow() {
+        return getNow(Calendar.getInstance().getTime(), DATE_STRING_FORMAT);
+    }
+
+    public static String getNow(String format) {
+        return getNow(Calendar.getInstance().getTime(), format);
+    }
+
+    public static String getNow(Date date) {
+        return getNow(date, DATE_STRING_FORMAT);
+    }
+
+    public static String getNow(long timeInMillis) {
+        return getNow(new Date(timeInMillis), DATE_STRING_FORMAT);
+    }
+
+    public static String getNow(Date date, String format) {
+        if (date == null) date = Calendar.getInstance().getTime();
+        if (isNullOrWhitespace(format)) format = DATE_STRING_FORMAT;
+        SimpleDateFormat dateFormat = new SimpleDateFormat(format);
+        return dateFormat.format(date);
+    }
 }
