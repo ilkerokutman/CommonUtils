@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         appendItem("getBatteryStatus", String.valueOf(CommonUtils.getBatteryStatus(mContext)), false);
         appendItem("isRooted", String.valueOf(CommonUtils.isRooted()), false);
         appendItem("generateFileName", CommonUtils.generateFileName(), false);
+        appendItem("isConnected", String.valueOf(CommonUtils.isConnected(mContext)), false);
     }
 
 }

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CommonUtilsHelper</string>
+    <string name="app_name_cu">CommonUtilsHelper</string>
     <string name="str_loading">Loading</string>
     <string name="str_invalid_phone_number">Invalid Phone Number</string>
     <string name="str_cant_send_email">Can not send email</string>
