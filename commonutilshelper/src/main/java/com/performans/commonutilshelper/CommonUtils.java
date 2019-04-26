@@ -10,7 +10,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.media.ExifInterface;
+import androidx.exifinterface.media.ExifInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -51,7 +51,7 @@ public class CommonUtils {
 
     private static final String TAG = CommonUtils.class.getSimpleName();
 
-    public static final String DATE_STRING_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+    private static final String DATE_STRING_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 
     public static String getAppVersionName() {
         return BuildConfig.VERSION_NAME;
@@ -109,16 +109,20 @@ public class CommonUtils {
     }
 
     public static boolean isWhitespace(String s) {
-        int length = s.length();
-        if (length > 0) {
-            for (int i = 0; i < length; i++) {
-                if (!Character.isWhitespace(s.charAt(i))) {
-                    return false;
+        try {
+            int length = s.length();
+            if (length > 0) {
+                for (int i = 0; i < length; i++) {
+                    if (!Character.isWhitespace(s.charAt(i))) {
+                        return false;
+                    }
                 }
+                return true;
             }
-            return true;
+            return false;
+        } catch (Exception e) {
+            return false;
         }
-        return false;
     }
 
     public static ProgressDialog showProgressDialog(Activity activity) {
@@ -200,15 +204,13 @@ public class CommonUtils {
 
     public static boolean findBinary(String binaryName) {
         boolean found = false;
-        if (!found) {
-            String[] places = {"/sbin/", "/system/bin/", "/system/xbin/",
-                    "/data/local/xbin/", "/data/local/bin/",
-                    "/system/sd/xbin/", "/system/bin/failsafe/", "/data/local/"};
-            for (String where : places) {
-                if (new File(where + binaryName).exists()) {
-                    found = true;
-                    break;
-                }
+        String[] places = {"/sbin/", "/system/bin/", "/system/xbin/",
+                "/data/local/xbin/", "/data/local/bin/",
+                "/system/sd/xbin/", "/system/bin/failsafe/", "/data/local/"};
+        for (String where : places) {
+            if (new File(where + binaryName).exists()) {
+                found = true;
+                break;
             }
         }
         return found;
@@ -416,9 +418,7 @@ public class CommonUtils {
         int width_tmp = o.outWidth, height_tmp = o.outHeight;
         int scale = 1;
 
-        while (true) {
-            if (width_tmp / 2 < requiredSize || height_tmp / 2 < requiredSize)
-                break;
+        while (width_tmp / 2 >= requiredSize && height_tmp / 2 >= requiredSize) {
             width_tmp /= 2;
             height_tmp /= 2;
             scale *= 2;
@@ -447,16 +447,17 @@ public class CommonUtils {
     public static Bitmap rotateImageIfRequired(Bitmap img, Context context,
                                                Uri selectedImage) throws IOException {
 
-        if (selectedImage.getScheme().equals("content")) {
+        if (selectedImage != null && selectedImage.getScheme() != null && selectedImage.getScheme().equals("content")) {
             String[] projection = {MediaStore.Images.ImageColumns.ORIENTATION};
             Cursor c = context.getContentResolver().query(selectedImage, projection, null, null, null);
-            if (c.moveToFirst()) {
+            if (c != null && !c.isClosed() && c.moveToFirst()) {
                 final int rotation = c.getInt(0);
                 c.close();
                 return rotateImage(img, rotation);
             }
             return img;
         } else {
+            assert selectedImage != null;
             ExifInterface ei = new ExifInterface(selectedImage.getPath());
             int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
             //Timber.d("orientation: %s", orientation);
@@ -477,8 +478,7 @@ public class CommonUtils {
     private static Bitmap rotateImage(Bitmap img, int degree) {
         Matrix matrix = new Matrix();
         matrix.postRotate(degree);
-        Bitmap rotatedImg = Bitmap.createBitmap(img, 0, 0, img.getWidth(), img.getHeight(), matrix, true);
-        return rotatedImg;
+        return Bitmap.createBitmap(img, 0, 0, img.getWidth(), img.getHeight(), matrix, true);
     }
 
     public static void hideKeyboard(Activity activity) {
@@ -523,7 +523,7 @@ public class CommonUtils {
     public static String getNow(Date date, String format) {
         if (date == null) date = Calendar.getInstance().getTime();
         if (isNullOrWhitespace(format)) format = DATE_STRING_FORMAT;
-        SimpleDateFormat dateFormat = new SimpleDateFormat(format);
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat(format);
         return dateFormat.format(date);
     }
 
