@@ -16,7 +16,7 @@ Add it in your root build.gradle at the end of repositories:
 Step 2. Add the dependency
 
 	dependencies {
-	        implementation 'com.github.ilkerokutman:CommonUtils:1.0'
+	        implementation 'com.github.ilkerokutman:CommonUtils:1.2'
 	}
 
 # How to use
