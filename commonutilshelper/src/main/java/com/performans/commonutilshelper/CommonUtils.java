@@ -39,10 +39,14 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import androidx.annotation.RequiresApi;
 import androidx.core.widget.NestedScrollView;
@@ -535,6 +539,17 @@ public class CommonUtils {
         return dateFormat.format(date);
     }
 
+    public static long getLongFromStringTime(String timeString) {
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+            Date date = sdf.parse(timeString);
+            return date.getTime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
     public static boolean isConnected(Context context){
         ConnectivityManager connectivityManager = (ConnectivityManager)
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -544,5 +559,76 @@ public class CommonUtils {
         } else {
             return true;
         }
+    }
+
+    public static boolean isWifiConnected(Context context) {
+        ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        @SuppressLint("MissingPermission") NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        return mWifi.isConnected();
+    }
+
+    public static String randomString(int length) {
+        Random generator = new Random();
+        StringBuilder randomStringBuilder = new StringBuilder();
+        int randomLength = generator.nextInt(length);
+        char tempChar;
+        for (int i = 0; i < randomLength; i++) {
+            tempChar = (char) (generator.nextInt(96) + 32);
+            randomStringBuilder.append(tempChar);
+        }
+        return randomStringBuilder.toString();
+    }
+
+    public static boolean isVersionHigher(String baseVersion, String testVersion) {
+        System.out.println("versionToComparable( baseVersion ) =" + versionToComparable(baseVersion));
+        System.out.println("versionToComparable( testVersion ) =" + versionToComparable(testVersion) + " is this higher ?");
+        return versionToComparable(testVersion).compareTo(versionToComparable(baseVersion)) >= 0;
+    }
+
+    private static String versionToComparable(String version) {
+//        System.out.println("version - " + version);
+        String versionNum = version;
+        int at = version.indexOf('-');
+        if (at >= 0)
+            versionNum = version.substring(0, at);
+
+        String[] numAr = versionNum.split("\\.");
+        String versionFormatted = "0";
+        for (String tmp : numAr) {
+            versionFormatted += String.format("%4s", tmp).replace(' ', '0');
+        }
+        while (versionFormatted.length() < 12)  // pad out to aaaa.bbbb.cccc
+        {
+            versionFormatted += "0000";
+        }
+//        System.out.println( "converted min version =" + versionFormatted + "=   : " + versionNum );
+        return versionFormatted + getVersionModifier(version, at);
+    }
+
+    private static String getVersionModifier(String version, int at) {
+//        System.out.println("version - " + version );
+        String[] wordModsAr = {"-SNAPSHOT", "-ALPHA", "-BETA", "-RC", "-RELEASE"};
+
+        if (at < 0)
+            return "." + wordModsAr.length + "00";   // make nothing = RELEASE level
+
+        int i = 1;
+        for (String word : wordModsAr) {
+            if ((at = version.toUpperCase().indexOf(word)) > 0)
+                return "." + i + getSecondVersionModifier(version.substring(at + word.length()));
+            i++;
+        }
+
+        return ".000";
+    }
+
+    private static String getSecondVersionModifier(String version) {
+        System.out.println("second modifier =" + version + "=");
+        Matcher m = Pattern.compile("(.*?)(\\d+).*").matcher(version);
+//        if ( m.matches() )
+//            System.out.println( "match ? =" + m.matches() + "=   m.group(1) =" + m.group(1) + "=   m.group(2) =" + m.group(2) + "=   m.group(3) =" + (m.groupCount() >= 3 ? m.group(3) : "x") );
+//        else
+//            System.out.println( "No match" );
+        return m.matches() ? String.format("%2s", m.group(2)).replace(' ', '0') : "00";
     }
 }
