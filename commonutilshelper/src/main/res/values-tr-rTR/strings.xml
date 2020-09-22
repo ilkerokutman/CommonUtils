@@ -5,4 +5,9 @@
     <string name="str_invalid_phone_number">Geçersiz Telefon Numarası</string>
     <string name="str_cant_send_email">Eposta gönderilemiyor</string>
     <string name="str_invalid_email">Geçersiz Eposta Adresi</string>
+    <string name="str_please_wait">Lütfen Bekleyin</string>
+    <string name="title_attention">Dikkat</string>
+    <string name="str_permission_required">İzniniz gerekiyor</string>
+    <string name="exitApp">UYGULAMADAN ÇIK</string>
+    <string name="action_go_to_settings">AYARLAR</string>
 </resources>

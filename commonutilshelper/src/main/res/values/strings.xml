@@ -4,4 +4,9 @@
     <string name="str_invalid_phone_number">Invalid Phone Number</string>
     <string name="str_cant_send_email">Can not send email</string>
     <string name="str_invalid_email">Invalid Email Address</string>
+    <string name="str_please_wait">Please wait</string>
+    <string name="title_attention">Attention</string>
+    <string name="str_permission_required">Permission required</string>
+    <string name="exitApp">EXIT APP</string>
+    <string name="action_go_to_settings">SETTINGS</string>
 </resources>
